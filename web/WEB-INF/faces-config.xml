@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config version="2.1"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
+
+    <application>
+        <resource-bundle>
+            <base-name>MessageBundle</base-name>
+            <var>msgbndl</var>
+        </resource-bundle>
+    </application>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>qo</from-outcome>
+            <to-view-id>/qobjekttable.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>mn</from-outcome>
+            <to-view-id>/massnahmetable.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>qk</from-outcome>
+            <to-view-id>/qkriteriumtable.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>qkv</from-outcome>
+            <to-view-id>/qkriterienvorlagetable.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>qp</from-outcome>
+            <to-view-id>/qprojekttable.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>register</from-outcome>
+            <to-view-id>/useraccounttable.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/dashboard.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>error</from-outcome>
+            <to-view-id>/error.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>adm</from-outcome>
+            <to-view-id>/dashboard.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>man</from-outcome>
+            <to-view-id>/overview.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>dev</from-outcome>
+            <to-view-id>/dashboard.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>con</from-outcome>
+            <to-view-id>/welcome.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cus</from-outcome>
+            <to-view-id>/evaluation.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>overview</from-outcome>
+            <to-view-id>/overview.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>    
+        <navigation-case>
+            <from-outcome>empty</from-outcome>
+            <to-view-id>/empty.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>        
+        <navigation-case>
+            <from-outcome>home</from-outcome>
+            <to-view-id>/home.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>        
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>        
+        <navigation-case>
+            <from-outcome>welcome</from-outcome>
+            <to-view-id>/welcome.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <converter>
+        <converter-id>MitarbeiterConverter</converter-id>
+        <converter-class>
+            de.affinis.pauline.converter.MitarbeiterConverter
+        </converter-class>
+    </converter>
+    <converter>
+        <converter-id>UserroleConverter</converter-id>
+        <converter-class>
+            de.affinis.pauline.converter.UserroleConverter
+        </converter-class>
+    </converter>
+    <converter>
+        <converter-id>AuftragConverter</converter-id>
+        <converter-class>
+            de.affinis.pauline.converter.AuftragConverter
+        </converter-class>
+    </converter>
+</faces-config>

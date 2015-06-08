@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+        <h:outputStylesheet name="common-style.css" library="css" />
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="template/zLayout.xhtml">
+
+            <ui:define name="center">
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true"/> 
+                    
+                    <p:breadCrumb>
+                        <p:menuitem action="qprojekttable"/>
+                          
+                    </p:breadCrumb>
+                    
+                    <p:dataTable value="#{qProjektView.myQProjektList}" widgetVar="qProjectsTable"
+                                 id="qProjectsTable" editable="true"
+                                 var="qProjekt" emptyMessage="Keine Qualitätsprojekte entsprechen diesen Kriterien"
+                                 filteredValue="#{qProjektView.filteredList}"
+                                 resizableColumns="true" liveResize="true">
+
+                        
+                        <p:ajax event="rowEditCancel" listener="#{qProjektView.onCancel}" update=":form:growl" />
+                        <p:ajax event="rowToggle" listener="#{qProjektView.onRowToggle}" update=":form:growl" />  
+                        <p:column width="2%">  
+                            <p:rowToggler />  
+                        </p:column>
+                        <p:column width="34%">
+                            <f:facet name="header">
+                                <h:outputText value="Auftrag"/>
+                            </f:facet>
+                            <p:commandLink action="qo" value="#{qProjekt.HAuftrag.name}">
+                                <f:setPropertyActionListener value="#{qProjekt}" target="#{qProjektView.selectedQProjekt}" />
+                            </p:commandLink>
+
+                        </p:column>
+
+
+
+                        <p:column width="11%">
+                            <f:facet name="header">
+                                <h:outputText value="Bewertung"/>
+                            </f:facet>
+                            <h:outputText value="#{qProjekt.QKeyFigure}" style="width:100%"/>
+                        </p:column>
+
+                        <p:column width="20%">
+                            <f:facet name="header">
+                                <h:outputText value="Kundenbewertung"/>
+                            </f:facet>
+                            <h:outputText value="#{qProjekt.QExtKeyFigure}" style="width:100%"/>
+                        </p:column>
+
+                        <p:column width="3%">
+                            <p:rowEditor/>
+                        </p:column>
+
+                        <p:column width="4%">
+
+                            <p:commandButton actionListener="#{qProjektView.deleteQProjekt(qProjekt)}"
+                                             image="ui-icon ui-icon-trash"
+                                             update="qProjectsTable :form:growl"/>
+
+                        </p:column>
+
+
+                        <p:rowExpansion>  
+                            <p:panelGrid id="display" columns="1">  
+                                <p:row>
+                                    <h:outputLabel for="Hinweis" value="Hinweis: " style="font-weight: bold"/>
+                                    <h:outputText id="Hinweis" value="#{qProjekt.hinweis}"/></p:row>
+                                <p:row>
+                                    <h:outputLabel for="Beschreibung:" value="Beschreibung: " style="font-weight: bold"/>
+                                    <h:outputText id="Beschreibung" value="#{qProjekt.beschreibung}"/></p:row>
+
+                            </p:panelGrid>  
+
+                        </p:rowExpansion>
+                    </p:dataTable>
+
+                    <p:commandButton value="Neues Qualitätsprojekt" oncomplete="registerDialog.show()"/>
+                    <p:dialog id="registerDialog" widgetVar="registerDialog" 
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade"
+                              modal="true">
+                        
+                        <p:panelGrid id="registerPanel" columns="2">
+
+
+                            <h:outputLabel for="auftragSelect" value="Auftrag: "/>
+
+
+                            <p:selectOneMenu id="auftragSelect" value="#{qProjektView.editQProjekt.HAuftrag}" converter="AuftragConverter">
+                                <f:selectItem itemLabel="Select Auftrag" itemValue=""/>
+                                <f:selectItems value="#{hAuftragView.availableForMeAuftragList}" var="auftrag" 
+                                               itemValue="#{auftrag}" itemLabel="#{auftrag.name}"/>
+
+                            </p:selectOneMenu>
+
+                            <h:outputLabel for="beschreibung" value="Beschreibung: "/>
+                            <h:inputText id="beschreibung" value="#{qProjektView.editQProjekt.beschreibung}" style="width: 400px"/>
+
+                            <h:outputLabel for="hinweis" value="Hinweis: "/>
+                            <h:inputTextarea id="hinweis" value="#{qProjektView.editQProjekt.hinweis}"/>
+
+                            <p:commandButton value="Speichern" actionListener="#{qProjektView.createQProjekt(qProjektView.editQProjekt)}"
+                                             oncomplete="registerDialog.hide()" 
+                                             update="growl qProjectsTable registerPanel"/>
+
+
+                        </p:panelGrid>
+
+                    </p:dialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

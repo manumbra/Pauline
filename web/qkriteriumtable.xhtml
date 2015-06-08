@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+        <h:outputStylesheet name="common-style.css" library="css" />
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="template/zLayout.xhtml">
+
+            <ui:define name="center">
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true"/>
+
+                    <p:breadCrumb>
+                        <p:menuitem action="qp"/>
+                        <p:menuitem value="#{qProjektView.selectedQProjekt.HAuftrag.name}" action="qo"  />  
+                        <p:menuitem value="#{qObjektView.selectedQObjekt.name}" action="qk" />  
+                    </p:breadCrumb> 
+
+                    <p:dataTable value="#{qKriteriumView.kriteriumListFromObjekt}" widgetVar="qKriterienTable"
+                                 id="qKriterienTable" editable="true"
+                                 var="kriterium" emptyMessage="Keine Kriterien entsprechen diesen Kriterien"
+                                 filteredValue="#{qKriteriumView.filteredList}"
+                                 resizableColumns="true" liveResize="true"
+                                 rowStyleClass="#{kriterium.QKriteriumBewertung le 5 ? 'critical' : null}">
+
+                        <p:ajax event="rowToggle" listener="#{qKriteriumView.onRowToggle}" update=":form:growl" />
+                        <p:ajax event="rowEdit" listener="#{qKriteriumView.onEdit}" update=":form:growl :form:rest" />  
+                        <p:ajax event="rowEditCancel" listener="#{qKriteriumView.onCancel}" update=":form:growl" />
+
+
+                        <p:column width="2%">
+                            <p:rowToggler/>
+                        </p:column>
+
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Kriterium"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{kriterium.PQKriterienVorlage.name}"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <p:selectOneMenu id="kriterium-table" value="#{qKriteriumView.editKriterium.PQKriterienVorlage}" converter="QKriterienVorlageConverter">
+                                        <f:selectItem itemLabel="Kriterium aus Vorlage" itemValue=""/>
+                                        <f:selectItems value="#{qKriterienVorlageView.alleKriterienVorlagen}" var="qKVorlage" 
+                                                       itemValue="#{qKVorlage}" itemLabel="#{qKVorlage.name}"/>
+
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+                        <p:column width="11%">
+                            <f:facet name="header">
+                                <h:outputText value="Bewertung"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText style="float: right" value="#{kriterium.QKriteriumBewertung}/8"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{kriterium.QKriteriumBewertung}" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+                        <p:column width="11%">
+                            <f:facet name="header">
+                                <h:outputText value="Gewichtung"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText style="float: right" value="#{(kriterium.QKriteriumGewichtung*100).intValue()}%"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{kriterium.QKriteriumGewichtung}" converter="ProzentConverter" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+                        <p:column width="11%">
+                            <f:facet name="header">
+                                <h:outputText value=" "/>
+                            </f:facet>
+                            <p:commandLink action="mn" value="Maßnahmen">
+                                <f:setPropertyActionListener value="#{kriterium}" target="#{qKriteriumView.selectedKriterium}" />
+                            </p:commandLink>
+
+
+                        </p:column>
+                        <p:column width="5%">
+
+                            <p:commandButton image="ui-icon ui-icon-trash" oncomplete="cd.show()" update=":form:cd">
+                                <f:setPropertyActionListener target="#{qKriteriumView.selectedKriterium}" value="#{kriterium}"/>
+                            </p:commandButton>
+
+                        </p:column>
+
+
+                        <p:column width="3%">
+                            <p:rowEditor/>
+                        </p:column>
+
+                        <p:column width="5%">
+
+                            <p:commandButton image="ui-icon ui-icon-search"
+                                             update=":form:detail-panel :form:detail"
+                                             oncomplete="detail.show()">
+                                <f:setPropertyActionListener target="#{qKriteriumView.selectedKriterium}" value="#{kriterium}"/>
+                            </p:commandButton>
+
+                        </p:column>
+                        <p:rowExpansion>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Beschreibung"/>
+                                <h:outputText value="#{kriterium.beschreibung}"/>
+                                <p:outputLabel value="Hinweis: " style="font-weight: bold"/>
+                                <h:outputText value="#{kriterium.hinweis}"/>
+                            </p:panelGrid>
+                        </p:rowExpansion>
+                    </p:dataTable>
+
+                    <p:commandButton value="Neues Kriterium" oncomplete="registerDialog.show()"/>
+
+                    <p:dialog id="registerDialog" widgetVar="registerDialog" 
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade" modal="true">
+                        
+                        <p:selectOneMenu value="#{qKriteriumView.editKriterium.PQKriterienVorlage}" >  
+                            <f:selectItem itemLabel="Kriterium aus Vorlage" itemValue="" />  
+                            <f:selectItems value="#{kriterienVorlageFormBean.kritVorlage}" />  
+                        </p:selectOneMenu>
+
+                        <p:separator/>
+
+                        <p:dataTable value="#{qKriterienVorlageView.alleKriterienVorlagen}"
+                                     selection="#{qKriterienVorlageView.selectedKriterienVorlage}"
+                                     var="kritVorlage" selectionMode="single" id="kritVorlage"
+                                     rowKey="#{kritVorlage.name}"
+                                     paginator="true" rows="8" rowsPerPageTemplate="8, 10, 12"
+                                     sortBy="#{kritVorlage.name}">
+                            <p:column width="3%">
+                                <p:rowToggler/>
+                            </p:column>
+                            <p:column headerText="Kriterienvorlage" filterBy="#{kritVorlage.name}" filterMatchMode="contains">
+                                <h:outputText value="#{kritVorlage.name}"/>
+                            </p:column>
+                            <p:rowExpansion>
+                                <p:panelGrid columns="2">
+                                    <p:outputLabel value="Beschreibung: "/> #{kritVorlage.beschreibung}
+                                    <p:outputLabel value="Hinweis: " /> #{kritVorlage.hinweis}
+                                </p:panelGrid>
+                                
+                                
+                            </p:rowExpansion>
+                        </p:dataTable>
+
+                        <p:separator/>
+
+                        <h:outputLabel value="Kriterium nicht vorhanden? "/><p:commandButton value="Neues Kriterium hinzufügen" action="qkv"/>
+
+                        <p:separator/>
+
+
+
+                        <p:panelGrid columns="2" style="padding-left: 200px" id="neuesKriterium">
+                            <h:outputLabel value="Beschreibung: "/>
+                            <p:inputText value="#{qKriteriumView.editKriterium.beschreibung}"/>
+                            <h:outputLabel value="Hinweis: "/>
+
+                            <p:inputTextarea value="#{qKriteriumView.editKriterium.hinweis}"/>
+                            <h:outputLabel value="Bewertung: "/>    
+                            <p:spinner min="3" max="8"
+                                       value="#{qKriteriumView.editKriterium.QKriteriumBewertung}" stepFactor="1"/>
+                            <h:outputLabel value="Gewichtung: "/>
+                            <p:spinner min="1" max="100"  stepFactor="1" converter="ProzentConverter"
+                                       value="#{qKriteriumView.editKriterium.QKriteriumGewichtung}"/>
+
+                        </p:panelGrid>
+
+
+                        <p:commandButton actionListener="#{qKriteriumView.createKriterium(qKriteriumView.editKriterium)}"
+                                         value="Speichern" update=":form:qKriterienTable :form:growl :form:kritVorlage :form:rest :form:neuesKriterium" oncomplete="registerDialog.hide()"/>
+
+
+
+
+
+
+                    </p:dialog>
+
+                    <p:dialog id="detail" widgetVar="detail"
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade" header="#{qKriteriumView.selectedKriterium.PQKriterienVorlage.name}">
+                        <p:panelGrid columnClasses="label, value" columns="2" id="detail-panel">
+                            <h:outputLabel value="Beschreibung: "/>
+                            <p:inplace editor="true" emptyLabel="keine Beschreibung">
+                                <p:inputText value="#{qKriteriumView.selectedKriterium.beschreibung}" label="text"/>
+                            </p:inplace>
+                            <h:outputLabel value="Hiweis: "/>
+                            <p:inplace editor="true" emptyLabel="kein Hinweis">
+                                <p:inputTextarea value="#{qKriteriumView.selectedKriterium.hinweis}" label="text"/>
+                            </p:inplace>
+                            <p:commandButton value="Speichern" actionListener="#{qKriteriumView.updateKriterium(qKriteriumView.selectedKriterium)}"
+                                             oncomplete="detail.hide();" update=":form:qKriterienTable :form:growl :form:rest"/>
+                        </p:panelGrid>
+                    </p:dialog>
+
+                    <p:confirmDialog id="cd" widgetVar="cd" message="Das Kriterium '#{qKriteriumView.selectedKriterium.PQKriterienVorlage.name}' wird gelöscht" severity="alert">
+                        <p:commandButton value="Ja" actionListener="#{qKriteriumView.deleteKriterium(qKriteriumView.selectedKriterium)}"
+                                         update="qKriterienTable :form:growl :form:rest :form:kritVorlage"
+                                         oncomplete="cd.hide()"/>
+                        <p:commandButton value="Nein" onclick="cd.hide();" type="button"/>
+                    </p:confirmDialog>
+
+                    <p:panel id="rest" style="float: right">
+                        <i>Restgewichtung: #{(qKriteriumView.restGewichtung*100).intValue()}%</i>
+                    </p:panel>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

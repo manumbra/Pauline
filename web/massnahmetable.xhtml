@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+        <h:outputStylesheet name="common-style.css" library="css" />
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="template/zLayout.xhtml">
+
+            <ui:define name="center">
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true"/>
+
+                    <p:breadCrumb>
+                        <p:menuitem action="qprojekttable"/>
+                        <p:menuitem value="#{qProjektView.selectedQProjekt.HAuftrag.name}" action="qo"  />  
+                        <p:menuitem value="#{qObjektView.selectedQObjekt.name}" action="qk" />  
+                        <p:menuitem value="#{qKriteriumView.selectedKriterium.PQKriterienVorlage.name}" />  
+
+                    </p:breadCrumb> 
+
+                    <p:dataTable value="#{pMassnahmeView.massnahmeListKriterium}" widgetVar="massnahmeTable"
+                                 id="massnahmeTable" editable="true"
+                                 var="mn" emptyMessage="Keine Maßnahmen entsprechen diesen Kriterien"
+                                 filteredValue="#{pMassnahmeView.filteredList}"
+                                 resizableColumns="true" liveResize="true">
+
+                        <p:ajax event="rowToggle" listener="#{pMassnahmeView.onRowToggle}" update=":form:growl" />
+                        <p:ajax event="rowEdit" listener="#{pMassnahmeView.onEdit}" update=":form:growl" />  
+                        <p:ajax event="rowEditCancel" listener="#{pMassnahmeView.onCancel}" update=":form:growl" />
+
+
+                        <p:column width="2%">
+                            <p:rowToggler/>
+                        </p:column>
+
+
+
+                        <p:column width="50%">
+                            <f:facet name="header">
+                                <h:outputText value="Beschreibung"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{mn.beschreibung}"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{mn.beschreibung}" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+
+
+                        <p:column width="18%">
+                            <f:facet name="header">
+                                <h:outputText value="Verantwortlicher"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{mn.mitarbeiter.name} #{mn.mitarbeiter.vorname}"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <p:selectOneMenu id="verantwortlicher" value="#{pMassnahmeView.editMassnahme.mitarbeiter}" converter="MitarbeiterConverter">
+                                        <f:selectItem itemLabel="Verantwortlicher" itemValue=""/>
+                                        <f:selectItems value="#{mitarbeiterView.mitarbeiterListFromAuftrag}" var="ma" 
+                                                       itemValue="#{ma}" itemLabel="#{ma.vorname} #{ma.name}"/>
+
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+                        <p:column width="12%">
+                            <f:facet name="header">
+                                <h:outputText value="Fälligkeit"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{mn.duedate}">
+                                        <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                    </h:outputText>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <p:calendar value="#{mn.duedate}"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+
+                        <p:column width="5%">
+
+                            <p:commandButton onclick="cd.show();"
+                                             image="ui-icon ui-icon-trash"
+                                             />
+
+                        </p:column>
+
+
+                        <p:column width="3%">
+                            <p:rowEditor/>
+                        </p:column>
+                        <p:rowExpansion>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Hinweis: " style="font-weight: bold"/>
+                                <h:outputText value="#{mn.hinweis}"/>
+                            </p:panelGrid>
+                        </p:rowExpansion>
+                    </p:dataTable>
+                    <p:commandButton value="Neue Maßnahme" oncomplete="registerDialog.show()"/>
+                    <p:dialog id="registerDialog" widgetVar="registerDialog" 
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade"
+                              modal="true">
+                        <p:panelGrid id="registerPanel" columns="2">
+
+                            <h:outputLabel for="verantwortlicher" value="Mitarbeiter: " />  
+                            <p:selectOneMenu id="verantwortlicher" value="#{pMassnahmeView.editMassnahme.mitarbeiter}" converter="MitarbeiterConverter">
+                                <f:selectItem itemLabel="Verantwortlicher" itemValue=""/>
+                                <f:selectItems value="#{mitarbeiterView.mitarbeiterListFromAuftrag}" var="ma" 
+                                               itemValue="#{ma}" itemLabel="#{ma.vorname} #{ma.name}"/>
+
+                            </p:selectOneMenu>
+
+                            <h:outputLabel for="beschreibung" value="Beschreibung: "/>
+                            <h:inputText id="beschreibung" value="#{pMassnahmeView.editMassnahme.beschreibung}" style="width: 600px"/> 
+
+                            <h:outputLabel for="duedate" value="Fälligkeit: "/>
+                            <p:calendar id="duedate" value="#{pMassnahmeView.editMassnahme.duedate}"/>
+
+                            <h:outputLabel for="hinweis" value="Hinweis: "/>
+                            <h:inputTextarea id="hinweis" value="#{pMassnahmeView.editMassnahme.hinweis}"/>
+
+
+
+                            <p:commandButton value="Speichern" actionListener="#{pMassnahmeView.createMassnahme(pMassnahmeView.editMassnahme)}"
+                                             oncomplete="PrimeFaces.showWatermarks();registerDialog.hide()" 
+                                             update="growl massnahmeTable registerPanel"/>
+
+                        </p:panelGrid>
+
+                    </p:dialog>
+                    
+                    <p:confirmDialog id="cd" widgetVar="cd" message="Die Maßnahme wird gelöscht" severity="alert">
+                        <p:commandButton value="Ja" actionListener="#{pMassnahmeView.deleteMassnahme(mn)}"
+                                         update="massnahmeTable :form:growl"
+                                         oncomplete="cd.hide()"/>
+                        <p:commandButton value="Nein" onclick="cd.hide();" type="button"/>
+                    </p:confirmDialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

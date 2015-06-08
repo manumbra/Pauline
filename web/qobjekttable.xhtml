@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+        <h:outputStylesheet name="common-style.css" library="css" />
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="template/zLayout.xhtml">
+
+            <ui:define name="center">
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true"/>
+                    <p:breadCrumb>
+                        <p:menuitem action="qp"/>
+                        <p:menuitem value="#{qProjektView.selectedQProjekt.HAuftrag.name}" action="qo"  />  
+
+                    </p:breadCrumb> 
+                    <p:dataTable value="#{qObjektView.objektListFromProjekt}" widgetVar="qObjektsTable"
+                                 id="qObjektsTable" editable="true"
+                                 var="qObjekt" emptyMessage="Keine Qualitätsobjekte entsprechen diesen Kriterien"
+                                 filteredValue="#{qObjektView.filteredList}"
+                                 resizableColumns="true" liveResize="true">
+
+                        <p:ajax event="rowToggle" listener="#{qObjektView.onRowToggle}" update=":form:growl" />
+                        <p:ajax event="rowEdit" listener="#{qObjektView.onEdit}" update=":form:growl :form:rest" />  
+                        <p:ajax event="rowEditCancel" listener="#{qObjektView.onCancel}" update=":form:growl" />
+
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Qualitätsobjekt"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{qObjekt.name}"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{qObjekt.name}" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+                        <p:column width="11%">
+                            <f:facet name="header">
+                                <h:outputText value="Bewertung"/>
+                            </f:facet>
+                            <h:outputText value="#{qObjekt.QObjektBewertung}" style=" font-weight: bold"/>
+                            <h:outputText value="/8" style="font-size: 135%"/>
+                        </p:column>
+
+                        <p:column width="11%">
+                            <f:facet name="header">
+                                <h:outputText value="Gewichtung"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{(qObjekt.QObjektGewichtung*100).intValue()}%"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{qObjekt.QObjektGewichtung}" style="width:100%" converter="ProzentConverter"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+                        <p:column width="3%">
+                            <p:rowEditor/>
+                        </p:column>
+                        <p:column width="9%">
+                            <f:facet name="header">
+                                <h:outputText value=" "/>
+                            </f:facet>
+                            <p:commandLink action="qk" value="Kriterien">
+                                <f:setPropertyActionListener value="#{qObjekt}" target="#{qObjektView.selectedQObjekt}" />
+                            </p:commandLink>
+
+
+                        </p:column>
+
+
+
+                        <p:column width="5%">
+
+                            <p:commandButton oncomplete="cd.show();" image="ui-icon ui-icon-trash"
+                                             update=":form:cd">
+                                <f:setPropertyActionListener target="#{qObjektView.selectedQObjekt}" value="#{qObjekt}"/>
+                            </p:commandButton>
+                        </p:column>
+                        
+                        <p:column width="5%">
+
+                            <p:commandButton image="ui-icon ui-icon-search"
+                                             update=":form:detail-panel :form:detail"
+                                             oncomplete="detail.show()">
+                                <f:setPropertyActionListener target="#{qObjektView.selectedQObjekt}" value="#{qObjekt}"/>
+                            </p:commandButton>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p:commandButton value="Neues Qualitätsobjekt" oncomplete="registerDialog.show()"/>
+                    <p:dialog id="registerDialog" widgetVar="registerDialog" 
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade"
+                              modal="true">
+                        <p:panelGrid id="registerPanel1" columns="2">
+
+                            <p:outputLabel for="objektTyp" value="Objekttyp"/>
+
+                            <p:selectOneMenu id="objektTyp" value="#{qObjektView.editQObjekt.PQObjektVorlage}" converter="QObjektVorlageConverter">
+                                <f:selectItem itemLabel="Objekttyp wählen" itemValue=""/>
+                                <f:selectItems value="#{qObjektVorlageView.alleObjektVorlagen}" var="typ" 
+                                               itemValue="#{typ}" itemLabel="#{typ.name}"/>
+                                <p:ajax listener="#{qObjektView.findType()}" event="change" update="registerPanel2 registerPanel3"/>
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="2" id="registerPanel2">
+                            <h:outputLabel id="hAufgabeLabel" for="hAufgabe" value="Aufgabe: " rendered="#{qObjektView.type}"/>
+                            <p:selectOneMenu id="hAufgabe" value="#{qObjektView.editQObjekt.HAufgabe}" converter="AufgabeConverter" rendered="#{qObjektView.type}">
+                                <f:selectItem itemLabel="Select Aufgabe" itemValue=""/>
+                                <f:selectItems value="#{hAufgabeView.availableAufgabenListFromHAuftrag}" var="objekt" 
+                                               itemValue="#{objekt}" itemLabel="#{objekt.aufgabe}"/>
+                                <p:ajax listener="#{qObjektView.findTask()}" event="change" update="registerPanel3"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+
+                        <p:panelGrid id="registerPanel3" columns="2">
+
+                            <h:outputLabel for="name" value="Name: "/>
+                            <h:inputText id="name" value="#{qObjektView.editQObjekt.name}"/>
+
+                            <h:outputLabel for="gewichtung" value="Gewichtung: "/>
+                            <p:spinner id="gewichtung"   
+                                       value="#{qObjektView.editQObjekt.QObjektGewichtung}" min="1" max="100" stepFactor="1" converter="ProzentConverter"/>
+
+
+                            <h:outputLabel for="beschreibung" value="Beschreibung: "/>
+                            <h:inputText id="beschreibung" value="#{qObjektView.editQObjekt.beschreibung}" style="width: 400px"/>
+
+                            <h:outputLabel for="hinweis" value="Hinweis: "/>
+                            <h:inputTextarea id="hinweis" value="#{qObjektView.editQObjekt.hinweis}"/>
+                            
+                            <p:outputLabel for="evalDat" value="Bewertungsdatum"/>
+                            <p:calendar id="evalDat" value="#{qObjektView.editQObjekt.evaldat}" showOn="button"/>
+
+                            <p:watermark for="gewichtung" value="5"/>
+                            <p:watermark id="wm-name" for="name" value="#{qObjektView.editQObjekt.HAufgabe.aufgabe}"/>
+
+                            <p:commandButton value="Speichern" actionListener="#{qObjektView.createObjekt(qObjektView.editQObjekt)}"
+                                             oncomplete="registerDialog.hide()" 
+                                             update="growl qObjektsTable registerPanel1 registerPanel2 registerPanel3 rest"/>
+
+                        </p:panelGrid>
+
+
+
+                    </p:dialog>
+                    
+                    <p:dialog id="detail" widgetVar="detail"
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade" header="#{qObjektView.selectedQObjekt.name}">
+                        <p:panelGrid columnClasses="label, value" columns="2" id="detail-panel">
+                            <h:outputLabel value="Beschreibung: "/>
+                            <p:inplace editor="true" emptyLabel="keine Beschreibung">
+                                <p:inputText value="#{qObjektView.selectedQObjekt.beschreibung}" label="text"/>
+                            </p:inplace>
+                            <h:outputLabel value="Hiweis: "/>
+                            <p:inplace editor="true" emptyLabel="kein Hinweis">
+                                <p:inputTextarea value="#{qObjektView.selectedQObjekt.hinweis}" label="text"/>
+                            </p:inplace>
+                            <p:commandButton value="Speichern" actionListener="#{qObjektView.updateObjekt(qObjektView.selectedQObjekt)}"
+                                             oncomplete="detail.hide();" update=":form:qObjektsTable :form:growl :form:rest"/>
+                        </p:panelGrid>
+                    </p:dialog>
+
+                    <p:confirmDialog id="cd" widgetVar="cd" message="Das Qualitätsobjekt '#{qObjektView.selectedQObjekt.name}' wird gelöscht" severity="alert">
+                        <p:commandButton value="Ja" actionListener="#{qObjektView.deleteObjekt(qObjektView.selectedQObjekt)}"
+                                         update="qObjektsTable :form:growl :form:rest"
+                                         oncomplete="cd.hide()"/>
+                        <p:commandButton value="Nein" onclick="cd.hide();" type="button"/>
+                    </p:confirmDialog>
+
+                    <p:panel id="rest" style="float: right">
+                        <i>Restgewichtung #{(qObjektView.restGewichtung*100).intValue()}%</i>
+                    </p:panel>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

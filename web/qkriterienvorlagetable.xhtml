@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+        <h:outputStylesheet name="common-style.css" library="css" />
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="template/zLayout.xhtml">
+
+            <ui:define name="center">
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true"/>
+
+                    <p:breadCrumb>
+                        <p:menuitem action="qp"/>
+                        <p:menuitem value="#{qProjektView.selectedQProjekt.HAuftrag.name}" action="qo"  />  
+                        <p:menuitem value="#{qObjektView.selectedQObjekt.name}" action="qk" />  
+
+                    </p:breadCrumb>
+
+                    <p:dataTable value="#{qKriterienVorlageView.alleKriterienVorlagen}" widgetVar="qKriterienVorlageTable"
+                                 id="qKriterienVorlageTable" editable="true"
+                                 var="kriterium" emptyMessage="Keine Kriterien entsprechen diesen Kriterien"
+                                 filteredValue="#{qKriterienVorlageView.filteredList}"
+                                 resizableColumns="true" liveResize="true"
+                                 selection="#{qKriterienVorlageView.selectedKriterienVorlage}"
+                                 selectionMode="single"
+                                 rowKey="#{kriterium.name}">
+
+                        <p:ajax event="rowToggle" listener="#{qKriterienVorlageView.onRowToggle}" update=":form:growl" />
+                        <p:ajax event="rowSelect" listener="#{qKriterienVorlageView.onRowSelect}"   
+                                update=":form:display :form:growl"/>  
+                        <p:ajax event="rowUnselect" listener="#{qKriterienVorlageView.onRowUnselect}" update=":form:growl"/>
+
+
+                        <p:column width="2%">
+                            <p:rowToggler/>
+                        </p:column>
+
+
+                        <p:column headerText="Name">
+                            <h:outputText value="#{kriterium.name}"/>
+                        </p:column>
+                        <p:rowExpansion>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Hinweis: " style="font-weight: bold"/>
+                                <h:outputText value="#{kriterium.hinweis}"/>
+                                <p:outputLabel value="Beschreibung: " style="font-weight: bold"/>
+                                <h:outputText value="#{kriterium.beschreibung}"/>
+                            </p:panelGrid>
+                        </p:rowExpansion>
+                    </p:dataTable>
+
+                    <p:commandButton value="Neue Vorlage Anlegen"   oncomplete="dialog.show()"/>
+
+                    <p:dialog id="dialog" widgetVar="dialog"
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade"
+                              modal="true">
+                        <p:panel>
+                            <p:panelGrid id="display" columnClasses="label, value" columns="2">
+                                <h:outputLabel value="Name: "/>
+                                <h:inputText value="#{qKriterienVorlageView.editKriterienVorlage.name}"/>
+
+                                <h:outputLabel value="Beschreibung: "/>
+                                <h:inputText value="#{qKriterienVorlageView.editKriterienVorlage.beschreibung}"/>
+
+                                <h:outputLabel value="Hinweis: "/>
+                                <h:inputTextarea value="#{qKriterienVorlageView.editKriterienVorlage.hinweis}"/>
+
+                                <p:outputLabel for="objektTyp" value="Objekttyp"/>
+
+                                <p:selectOneMenu id="objektTyp" value="#{qKriterienVorlageView.editKriterienVorlage.PQObjektVorlage}" converter="QObjektVorlageConverter">
+                                    <f:selectItem itemLabel="Objekttyp wählen" itemValue=""/>
+                                    <f:selectItems value="#{qObjektVorlageView.alleObjektVorlagen}" var="typ" 
+                                                   itemValue="#{typ}" itemLabel="#{typ.name}"/>
+                                </p:selectOneMenu>
+
+                                <p:commandButton value="Kriterium zur Vorlage hinzufügen" oncomplete="dialog.hide()"
+                                                 actionListener="#{qKriterienVorlageView.createKriterienVorlage(qKriterienVorlageView.editKriterienVorlage)}"
+                                                 update="qKriterienVorlageTable growl display"/>
+                            </p:panelGrid>
+
+                        </p:panel>
+                    </p:dialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

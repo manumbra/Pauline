@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <h:outputStylesheet name="common-style.css" library="css" />
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>PrimeFaces</title>
+            </f:facet>
+        </h:head>
+
+        <h:body>
+
+            <ui:composition template="template/zLayout.xhtml">
+                <ui:define name="center">
+                    <h:form rendered="#{UserManager.sessionCounter==1}">
+                        <p:growl id="growl"/>
+                        <p:accordionPanel id="tabView" var="projekt" value="#{qProjektView.myQProjektList}">  
+                            <p:tab title="#{projekt.HAuftrag.name}: #{projekt.beschreibung} (Bewertung: #{projekt.QKeyFigure})">
+                                <p:dataTable value="#{projekt.objektList}" var="qObjekt">
+                                    
+                                    <p:columnGroup type="header">
+
+                                        <p:row>
+                                            <p:column headerText="Qualitätsobjekte"/>
+                                            <p:column headerText="Gewichtung"/>
+                                            <p:column headerText="Bewertung"/>
+                                        </p:row>
+
+                                    </p:columnGroup>
+
+                                    <p:subTable var="krit" value="#{qObjekt.kriteriumList}">
+                                        <f:facet name ="header">
+                                            #{qObjekt.name}
+                                        </f:facet>
+
+                                        <p:column width="74%">
+                                            #{krit.PQKriterienVorlage.name}
+                                        </p:column>
+
+                                        <p:column width="12%">
+                                            #{krit.QKriteriumGewichtung}
+                                        </p:column>
+
+                                        <p:column width="12%">
+                                            #{krit.QKriteriumBewertung}
+                                        </p:column>
+
+                                        <p:columnGroup type="footer">
+                                            <p:row>
+                                                <p:column footerText=" " />
+                                                <p:column footerText="#{qObjekt.QObjektGewichtung}" style="text-align: center"/>
+                                                <p:column footerText="#{qObjekt.QObjektBewertung}" style="text-align: center"/>
+                                            </p:row>
+                                        </p:columnGroup>
+
+                                    </p:subTable>
+                                </p:dataTable>
+                            </p:tab>  
+                        </p:accordionPanel>
+
+                    </h:form>
+                </ui:define>
+
+            </ui:composition>
+        </h:body>
+
+    </f:view>
+</html>

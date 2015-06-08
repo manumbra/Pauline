@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+        <h:outputStylesheet name="common-style.css" library="css" />
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="template/zLayout.xhtml">
+
+            <ui:define name="center">
+                <h:form id="form-table">
+                    <p:growl id="growl" showDetail="true"/> 
+                    <p:dataTable value="#{useraccountView.useraccountList}" widgetVar="userTable"
+                                 id="userTable" editable="true"
+                                 var="user" emptyMessage="No users corespond to these criteria"
+                                 filteredValue="#{useraccountView.filteredList}"
+                                 resizableColumns="true" liveResize="true">
+
+                        <p:ajax event="rowToggle" listener="#{useraccountView.onRowToggle}" update=":form-table:growl" />
+                        <p:ajax event="rowEdit" listener="#{useraccountView.onEdit}" update=":form-table:growl" />  
+                        <p:ajax event="rowEditCancel" listener="#{useraccountView.onCancel}" update=":form-table:growl" /> 
+                        <p:column>  
+                            <p:rowToggler />  
+                        </p:column>
+                        <p:column filterBy="#{user.login}" filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="User"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{user.login}"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{user.login}" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+                        <p:column filterBy="#{user.passwd}" filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Password"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{user.passwd}" style="width:100%"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText value="#{user.passwd}" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{user.passwd}" filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Userrole"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{user.PUserrole.role}" style="width:100%"/>
+                                </f:facet>
+
+                                <f:facet name="input">
+                                    <p:selectOneMenu id="editrole" value="#{user.PUserrole}" converter="UserroleConverter">
+                                        <f:selectItem itemLabel="#{user.PUserrole.role}" itemValue="#{user.PUserrole}"/>
+                                        <f:selectItems value="#{pUserroleView.PUserroleList}" var="userrole" 
+                                                       itemValue="#{userrole}" itemLabel="#{userrole.role}"/>
+
+                                    </p:selectOneMenu>
+
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column style="width: 10%">  
+                            <p:rowEditor />  
+                        </p:column>
+
+                        <p:column>
+                            <p:commandLink value="löschen" oncomplete="cd.show()" update=":form-table:cd">
+                                <f:setPropertyActionListener target="#{useraccountView.selectedUseraccount}" value="#{user}"/>
+                            </p:commandLink>
+                        </p:column>
+
+
+                        <p:rowExpansion>  
+                            <h:panelGrid id="display" columns="2" style="width:300px;">  
+
+                                <h:outputText value="Name: " />  
+                                <h:outputText id="name" value="#{user.mitarbeiter.name}" />  
+
+                                <h:outputText value="Vorname: " />  
+                                <h:outputText id="year" value="#{user.mitarbeiter.vorname}" />
+
+                            </h:panelGrid>  
+
+                        </p:rowExpansion>
+                    </p:dataTable>
+
+                    <p:confirmDialog id="cd" widgetVar="cd" message="#{msgbndl.msgDelUser}" severity="alert">
+                        <p:commandButton value="Ja" actionListener="#{useraccountView.deleteBenutzer(useraccountView.selectedUseraccount)}"
+                                         update="userTable :form-table:growl"
+                                         oncomplete="cd.hide()"/>
+                        <p:commandButton value="Nein" onclick="cd.hide();" type="button"/>
+                    </p:confirmDialog>
+                </h:form>
+                <h:form id="form-dialog">
+                    <p:commandButton value="#{msgbndl.btnNUser}" oncomplete="registerDialog.show()"/>
+                    <p:dialog id="registerDialog" widgetVar="registerDialog" 
+                              closable="true" closeOnEscape="TRUE" 
+                              showEffect="fade" hideEffect="fade"
+                              modal="true">
+                        <p:panelGrid id="registerPanel" columns="2">
+
+
+                            <h:outputLabel for="username" value="Benutzer: "/>
+                            <h:inputText id="username" value="#{useraccountView.editUseraccount.login}" />
+
+                            <h:outputLabel for="password" value="Passwort: "/>
+                            <p:password id="password" value="#{useraccountView.editUseraccount.passwd}" match="password2" />
+
+                            <h:outputLabel for="password2" value="Passwort bestätigen: "/>
+                            <p:password id="password2" value="#{useraccountView.editUseraccount.passwd}"/>
+
+                            <h:outputText value="Mitarbeiter: " />  
+                            <p:autoComplete value="#{useraccountView.editUseraccount.mitarbeiter}" id="basicPojo" completeMethod="#{mitarbeiterView.completeMitarbeiter}"  
+                                            var="p" itemLabel="#{p.name} #{p.vorname}" itemValue="#{p}" converter="MitarbeiterConverter" forceSelection="true"/>
+
+                            <h:outputLabel for="userrole" value="Userrole: "/>
+                            <p:selectOneMenu id="userrole" value="#{useraccountView.editUseraccount.PUserrole}" converter="UserroleConverter">
+                                <f:selectItem itemLabel="Role" itemValue=""/>
+                                <f:selectItems value="#{pUserroleView.PUserroleList}" var="userrole" 
+                                               itemValue="#{userrole}" itemLabel="#{userrole.role}"/>
+                            </p:selectOneMenu>
+
+                            <p:commandButton value="Speichern" actionListener="#{useraccountView.createUseraccount(useraccountView.editUseraccount)}"
+                                             oncomplete="registerDialog.hide()" 
+                                             update=":form-table:growl :form-table:userTable :form-dialog:registerPanel"/>
+
+
+                        </p:panelGrid>
+
+                    </p:dialog>
+
+
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

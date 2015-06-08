@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <h:outputStylesheet name="common-style.css" library="css" />
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>PrimeFaces</title>
+            </f:facet>
+        </h:head>
+
+        <h:body>
+
+            <ui:composition template="template/zLayout.xhtml">
+
+                <ui:define name="center">
+                    <h:form id="form" rendered="#{UserManager.dam}">
+                        <p:tabView effect="blind">
+                            <p:tab title="Mitarbeiter">
+                                <p:dataTable id="mitarbeiter-table" 
+                                             value="#{mitarbeiterView.mitarbeiterList}" var="mitarbeiter" 
+                                             rows="10" paginator="true">
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Name"/>
+                                        </f:facet>
+                                        <h:outputText value="#{mitarbeiter.name}"/>
+
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Vorname"/>
+                                        </f:facet>
+                                        <h:outputText value="#{mitarbeiter.vorname}"/>
+
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Email"/>
+                                        </f:facet>
+                                        <h:outputText value="#{mitarbeiter.email}"/>
+
+                                    </p:column>
+
+
+                                </p:dataTable>
+                            </p:tab>
+
+                            
+                            <p:tab title="Benutzer">
+                                <p:dataTable id="userTable" value="#{useraccountView.useraccountList}" var="user" rows="10" paginator="true">
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="ID"/>
+                                        </f:facet>
+                                        <h:outputText value="#{user.hid}"/>
+
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Login"/>
+                                        </f:facet>
+                                        <h:outputText value="#{user.login}"/>
+
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Password"/>
+                                        </f:facet>
+                                        <h:outputText value="#{user.passwd}"/>
+
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Mitarbeiter"/>
+                                        </f:facet>
+                                        <h:outputText value="#{user.mitarbeiter.name} #{user.mitarbeiter.vorname}"/>
+
+                                    </p:column>
+
+                                </p:dataTable>
+                            </p:tab>
+                            
+                            <p:tab title="Qualitätsprojekte">
+                                <p:dataTable id="qProjectsTable" value="#{qProjektView.QProjektList}" var="qp" rows="10" paginator="true">
+                                    <p:column width="44%">
+                                        <f:facet name="header">
+                                            <h:outputText value="Auftrag"/>
+                                        </f:facet>
+                                        <h:outputText value="#{qp.HAuftrag.name}"/>
+
+                                    </p:column>
+                                    
+                                    <p:column width="28%">
+                                        <f:facet name="header">
+                                            <h:outputText value="Beschreibung"/>
+                                        </f:facet>
+                                        <h:outputText value="#{qp.beschreibung}"/>
+
+                                    </p:column>
+                                    
+                                    <p:column width="28%">
+                                        <f:facet name="header">
+                                            <h:outputText value="Qualitätsverantwortlicher"/>
+                                        </f:facet>
+                                        <h:outputText value="#{qp.PUseraccountByCreatedby.mitarbeiter.name}, #{qp.PUseraccountByCreatedby.mitarbeiter.vorname}"/>
+
+                                    </p:column>
+                                    
+                                    
+
+                                </p:dataTable>
+                            </p:tab>
+                            
+                        </p:tabView>
+
+                    </h:form> 
+
+                </ui:define>
+
+            </ui:composition>
+        </h:body>
+
+    </f:view>
+</html>
+

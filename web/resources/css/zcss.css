@@ -1,0 +1,118 @@
+/* 
+    Document   : zcss
+    Created on : 08.07.2013, 11:26:57
+    Author     : Marin Cordeleanu
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+/* Reset body padding and margins */
+body { margin:0; padding:0; }
+
+
+
+/* Make Header Sticky */
+#header_container { background-image:url(images/bg.jpg); background-repeat:repeat-x; 
+                    border:1px solid #666; 
+                    height:125px; left:0; 
+                     
+                    width:100%; 
+                    top:0; }
+#header{ line-height:80px; 
+         margin:0 auto; 
+         width:930px; }
+
+a:link {text-decoration:none;}    /* unvisited link */
+a:visited {text-decoration:none;} /* visited link */
+a:hover {text-decoration:underline;}   /* mouse over link */
+a:active {text-decoration:underline;}  /* selected link */
+
+div.navigation {
+    padding-top: 15px;
+    padding-bottom: 8px;
+    margin:0 auto; 
+    width:930px; 
+    clear: both;}
+
+
+/* CSS for the content of page. I am giving top and bottom padding of 80px to make sure the header and footer do not overlap the content.*/
+#content_container { margin:0 auto; 
+                     overflow:auto; 
+                     width:930px;
+                     padding-bottom: 290px;
+
+}
+#content{}
+
+/* Make Footer Sticky */
+#footer_container { background:#eee; 
+                    border:1px solid #666; 
+                    bottom:0; 
+                    height:260px; 
+                    left:0; 
+                    position:fixed; 
+                    width:100%; }
+#footer { line-height:20px; 
+          margin:0 auto; 
+          width:930px; 
+          text-align:center; }
+
+h1 {
+    text-align: center;
+}
+
+div.logo {
+    float: left;
+}
+
+div.info {
+    float: right;
+}
+
+div.login {
+    float: right;
+}
+
+.ui-panel-content{
+    background-color: #336699;
+}
+
+
+.DataTable table * {
+    border: none !important;
+}
+
+.ui-datatable.borderless .ui-datatable-data tr,
+.ui-datatable.borderless .ui-datatable-data-empty tr,
+.ui-datatable.borderless .ui-datatable-data td,
+.ui-datatable.borderless .ui-datatable-data-empty td {
+    border-style: none;
+}
+
+.ui-panelgrid.borderless td {
+    border-style: none;
+    padding:4px 10px;
+}
+
+.companyHeaderGrid tr, .companyHeaderGrid td {
+    border: none;
+}
+
+.ui-growl {
+
+    right:20px;
+    top: 30%;
+}
+
+.ui-panelgrid td, .ui-panelgrid tr
+{
+    border-style: none !important
+}
+
+.critical {
+    background-color: red;
+}

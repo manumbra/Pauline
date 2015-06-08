@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+        <ui:composition>
+            <h:form id="monitoring-footer-form">
+                <div style="float: right"><h1>right float</h1></div>
+                <div style="float: left">
+                    <p:panel id="monitoring-footer-panel" header="Monitoring" >
+                        <p:panelGrid columns="2">
+                            <h:outputText value="login"/>
+                            <h:outputText value="#{pUseraccount.login}"/>
+                            <h:outputText value="password"/>
+                            <h:outputText value="#{pUseraccount.passwd}"/>
+                            <h:outputText value="user id"/>
+                            <h:outputText value="#{pUseraccount.hid}"/>
+                            <h:outputText value="Mitarbeiter ID"/>
+                            <h:outputText value="#{pUseraccount.mitarbeiter.hid}"/>
+                            <h:outputText value="#{UserManager.PUseraccount.login}"/>
+                            <h:outputText value="#{UserManager.PUseraccount.passwd}"/>
+                            <h:outputText value="session counter"/>
+                            <h:outputText value="#{UserManager.sessionCounter}"/>
+                        </p:panelGrid>
+                    </p:panel>
+                </div>
+            </h:form>
+        </ui:composition>
+    </body>
+</html>
